@@ -52,7 +52,7 @@ void *findAddress(PBYTE pattern, BYTE len)
 void detourFunction(void *addr, void *hook)
 {
     DWORD oldProt;
-    VirtualProtect(addr, 7, PAGE_READWRITE, &oldProt);
+    VirtualProtect(addr, 7, PAGE_EXECUTE_READWRITE, &oldProt);
     *(BYTE *)addr = 0xB8;
     *(DWORD *)(addr + 1) = (DWORD)(hook);
     *(WORD *)(addr + 5) = 0xE0FF;

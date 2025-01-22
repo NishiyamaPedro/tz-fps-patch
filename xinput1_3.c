@@ -30,7 +30,7 @@ void initXInputWrapper(void)
         return;
     }
 
-    realXInputSetState = (XInputSetStatePtr)GetProcAddress(xinput1_3dll, "DirectInput8Create");
+    realXInputSetState = (XInputSetStatePtr)GetProcAddress(xinput1_3dll, "XInputSetState");
 
     LOG("loaded XInput1_3");
 }
