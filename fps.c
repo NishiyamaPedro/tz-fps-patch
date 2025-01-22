@@ -1,7 +1,6 @@
 #include "fps.h"
 
 static DWORD timestep = 0x0217b464;
-static DWORD fpsConst = 0x00D977B8;
 static DWORD frameTime1 = 0x021308c0;
 static DWORD frameTime2 = 0x00d97818;
 static DWORD frameTimePhys = 0x00d562d8;
@@ -57,10 +56,6 @@ void calcFrameTimeHook(void)
     VirtualProtect((LPVOID)frameTimePhys, 4, PAGE_READWRITE, &oldProt);
     *(float *)(frameTimePhys) = (float)frameTime;
     VirtualProtect((LPVOID)frameTimePhys, 4, oldProt, NULL);
-
-    VirtualProtect((LPVOID)fpsConst, 8, PAGE_READWRITE, &oldProt);
-    *(double *)(fpsConst) = FPS;
-    VirtualProtect((LPVOID)fpsConst, 8, oldProt, NULL);
 }
 
 void patchFPS(void)
@@ -85,7 +80,6 @@ void patchFPS(void)
     QueryPerformanceCounter(&perfCounter);
 
     timestep = convertAddress(timestep);
-    fpsConst = convertAddress(fpsConst);
     frameTime1 = convertAddress(frameTime1);
     frameTime2 = convertAddress(frameTime2);
     frameTimePhys = convertAddress(frameTimePhys);
