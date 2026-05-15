@@ -6,6 +6,7 @@ static DWORD frameTime2 = 0x00d97818;
 static DWORD frameTimePhys = 0x00d562d8;
 static DWORD updateTime1 = 0x021308b0;
 static DWORD updateTime2 = 0x0213089c;
+static DWORD inCutscene  =  0x0213031C;
 
 static double lastTime;
 static LARGE_INTEGER perfFrequency;
@@ -28,8 +29,8 @@ void calcFrameTimeHook(void)
 
     // Force the time step to always be 1
     VirtualProtect((LPVOID)timestep, 8, PAGE_READWRITE, &oldProt);
-    *(DWORD *)(timestep) = 0x1;
-    *(DWORD *)(timestep + 4) = 0x1;
+    *(DWORD *)(timestep) = (*(BYTE *)inCutscene & 0x1) ? 0x02 : 0x1;
+    *(DWORD *)(timestep + 4) = (*(BYTE *)inCutscene & 0x1) ? 0x02 : 0x1;
     VirtualProtect((LPVOID)timestep, 8, oldProt, NULL);
 
     // Set updateTime based on framerate
@@ -37,10 +38,10 @@ void calcFrameTimeHook(void)
     // nor will it run twice as fast when above
     // But to target 60 FPS+, we would need to patch other parts of the game
     VirtualProtect((LPVOID)updateTime1, 4, PAGE_READWRITE, &oldProt);
-    *(float *)(updateTime1) = (float)(60.0 / FPS);
+    *(float *)(updateTime1) = (*(BYTE *)inCutscene & 0x1) ? 2.0 : (float)(60.0 / FPS);
     VirtualProtect((LPVOID)updateTime1, 4, oldProt, NULL);
     VirtualProtect((LPVOID)updateTime2, 4, PAGE_READWRITE, &oldProt);
-    *(float *)(updateTime2) = (float)(60.0 / FPS);
+    *(float *)(updateTime2) = (*(BYTE *)inCutscene & 0x1) ? 2.0 : (float)(60.0 / FPS);
     VirtualProtect((LPVOID)updateTime2, 4, oldProt, NULL);
 
     // Set our calculated frame time
